@@ -69,6 +69,7 @@ class _PieceSetScreenState extends ConsumerState<PieceSetScreen> {
               : const SizedBox.shrink(),
           itemBuilder: (context, index) {
             final pieceSet = PieceSet.values[index];
+
             return ListTile(
               trailing: boardPrefs.pieceSet == pieceSet ? const Icon(Icons.check) : null,
               title: Text(pieceSet.label),
@@ -81,11 +82,7 @@ class _PieceSetScreenState extends ConsumerState<PieceSetScreen> {
                       hue: boardPrefs.hue,
                       child: boardPrefs.boardTheme.thumbnail,
                     ),
-                    Row(
-                      children: [
-                        for (final img in getPieceImages(pieceSet)) Image(image: img, height: 44),
-                      ],
-                    ),
+                    buildPieceRow(pieceSet),
                   ],
                 ),
               ),
@@ -95,6 +92,25 @@ class _PieceSetScreenState extends ConsumerState<PieceSetScreen> {
           },
         ),
       ),
+    );
+  }
+
+  MultiChildRenderObjectWidget buildPieceRow(PieceSet pieceSet) {
+    if (!pieceSet.is3d) {
+      return Row(
+        children: [for (final img in getPieceImages(pieceSet)) Image(image: img, height: 44)],
+      );
+    }
+
+    return Wrap(
+      spacing: pieceSet.is3d ? -3 : 0,
+      children: [
+        for (final img in getPieceImages(pieceSet))
+          Transform.translate(
+            offset: const Offset(0, -8),
+            child: Image(image: img, height: 60),
+          ),
+      ],
     );
   }
 }
